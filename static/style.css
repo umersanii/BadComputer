@@ -1,0 +1,287 @@
+/* Modern, sleek styling for Raspberry Pi monitor */
+:root {
+    --primary: #3a86ff;
+    --success: #38b000;
+    --warning: #ffaa00;
+    --danger: #ff5252;
+    --background: #121212;
+    --card-bg: #1e1e1e;
+    --card-header: #252525;
+    --text: #e0e0e0;
+    --text-secondary: #aaaaaa;
+    --border-radius: 12px;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 16px;
+  }
+  
+  .dashboard {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  
+  .card {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .chart-card {
+    grid-column: span 2;
+  }
+  
+  .processes-card {
+    grid-column: span 2;
+  }
+  
+  .card-header {
+    background-color: var(--card-header);
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .card-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin: 0;
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  /* Metrics styling */
+  .metric-large {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  
+  .metric-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 16px;
+  }
+  
+  .metric-item {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 4px 0;
+  }
+  
+  .metric-small {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 12px;
+  }
+  
+  /* Progress bars */
+  .progress-container {
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    transition: width 0.5s ease;
+  }
+  
+  .progress-normal {
+    background: linear-gradient(to right, #3a86ff, #38b000);
+  }
+  
+  .progress-warning {
+    background: linear-gradient(to right, #ffaa00, #ff8800);
+  }
+  
+  .progress-critical {
+    background: linear-gradient(to right, #ff5252, #ff0000);
+  }
+  
+  /* Alerts */
+  .alert {
+    padding: 12px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .alert-success {
+    background-color: rgba(56, 176, 0, 0.15);
+    border-left: 4px solid var(--success);
+  }
+  
+  .alert-warning {
+    background-color: rgba(255, 170, 0, 0.15);
+    border-left: 4px solid var(--warning);
+  }
+  
+  .alert-danger {
+    background-color: rgba(255, 82, 82, 0.15);
+    border-left: 4px solid var(--danger);
+  }
+  
+  /* Temperature indicator */
+  .temperature-indicator {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .thermometer {
+    width: 16px;
+    height: 100px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .thermometer-fill {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    border-radius: 0;
+    transition: height 0.5s ease;
+  }
+  
+  .temp-normal {
+    background: linear-gradient(to top, #3a86ff, #38b000);
+  }
+  
+  .temp-warning {
+    background: linear-gradient(to top, #ffaa00, #ff8800);
+  }
+  
+  .temp-critical {
+    background: linear-gradient(to top, #ff5252, #ff0000);
+  }
+  
+  /* Network stats */
+  .network-stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+  
+  .network-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .network-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+  }
+  
+  /* Process list */
+  .process-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .process-item {
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    transition: background-color 0.2s;
+  }
+  
+  .process-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+  
+  .process-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .process-details {
+    display: flex;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    gap: 12px;
+  }
+  
+  .process-pid {
+    color: #888;
+  }
+  
+  .process-cpu {
+    color: var(--primary);
+  }
+  
+  .process-mem {
+    color: #ff9e00;
+  }
+  
+  footer {
+    text-align: center;
+    padding: 16px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .grid-container {
+      grid-template-columns: 1fr;
+    }
+    
+    .chart-card, .processes-card {
+      grid-column: span 1;
+    }
+    
+    .card-body {
+      padding: 16px;
+    }
+    
+    .metric-large {
+      font-size: 2rem;
+    }
+  }
