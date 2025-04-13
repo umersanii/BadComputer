@@ -1,6 +1,6 @@
 # BadComputer - Raspberry Pi Resource Monitor
 
-![BadComputer Dashboard](https://raw.githubusercontent.com/username/badcomputer/main/screenshots/dashboard.png)
+![BadComputer Dashboard](https://github.com/umersanii/SaniPi/blob/fb65a28dfca6d6de307e18dd6fa8388e7e19519c/Pi.jpeg)
 
 ## Overview
 
@@ -167,8 +167,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- Created by ![Umer Sani](https://github.com/umersanii)
-- Contributed by ![Umer Ghafoor](https://github.com/umerghafoor)
+- Created by [Umer Sani](https://github.com/umersanii)
+- Contributed by [Umer Ghafoor](https://github.com/umerghafoor)
 - Inspired by Batman and various system monitoring tools
 - Uses [Chart.js](https://www.chartjs.org/) for data visualization
 - Uses [psutil](https://github.com/giampaolo/psutil) for system metrics
