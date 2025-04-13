@@ -4,17 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspberry Pi System Monitor</title>
+    <title>BadComputer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Updated Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="{{ url_for('static', filename='bats.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='bats.ico') }}">
 </head>
 
 <body>
     <div class="dashboard">
-        <header>
-            <h1>Sani's Pi System Monitor</h1>
-        </header>
+        <header class="header-container">
+            <img src="{{ url_for('static', filename='batsy.png') }}" alt="Logo" class="logo-img">
+            <div class="header-text">
+              <h1>BadComputer</h1>
+            </div>
+          </header>
+          
 
         <div class="grid-container">
             <!-- Alerts Panel -->
@@ -27,24 +32,24 @@
                 </div>
             </div>
 
-            <!-- CPU Usage Panel -->
+            <!-- CPU Usage Panel (updated progress bar styling) -->
             <div class="card">
                 <div class="card-header">
                     <h2>CPU Usage</h2>
                 </div>
                 <div class="card-body">
                     <div class="metric-large" id="cpu">0%</div>
-                    <div class="progress-container">
+                    <div class="progress-container cpu-progress">
                         <div class="progress-bar" id="cpu-bar" style="width: 0%"></div>
                     </div>
                     <div class="metric-small" id="cpuCores">Loading core data...</div>
-                </div>
+                </div                           >
             </div>
 
-            <!-- Memory Panel -->
+            <!-- RAM Panel -->
             <div class="card">
                 <div class="card-header">
-                    <h2>Memory</h2>
+                    <h2>RAM</h2>
                 </div>
                 <div class="card-body">
                     <div class="metric-large" id="memoryPercent">0%</div>
@@ -55,6 +60,24 @@
                         <div class="metric-item" id="memoryTotal">Total: 0 MB</div>
                         <div class="metric-item" id="memoryUsed">Used: 0 MB</div>
                         <div class="metric-item" id="memoryFree">Free: 0 MB</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swap Panel -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Swap Memory</h2>
+                </div>
+                <div class="card-body">
+                    <div class="metric-large" id="swapPercent">0%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="swap-bar" style="width: 0%"></div>
+                    </div>
+                    <div class="metric-details">
+                        <div class="metric-item" id="swapTotal">Total: 0 MB</div>
+                        <div class="metric-item" id="swapUsed">Used: 0 MB</div>
+                        <div class="metric-item" id="swapFree">Free: 0 MB</div>
                     </div>
                 </div>
             </div>
@@ -86,20 +109,25 @@
                 </div>
             </div>
 
-            <!-- Temperature Panel -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>Current Temperature</h2>
-                </div>
-                <div class="card-body">
-                    <div class="metric-large" id="temp">0°C</div>
-                    <div class="temperature-indicator">
-                        <div class="thermometer">
-                            <div class="thermometer-fill" id="temp-fill"></div>
+        <!-- Temperature Panel (updated styling) -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Current Temperature</h2>
+            </div>
+            <div class="card-body temp-body">
+                <div class="metric-large temp-value" id="temp">0°C</div>
+                <div class="temperature-indicator">
+                    <div class="thermometer">
+                        <div class="thermometer-fill" id="temp-fill"></div>
+                        <div class="thermometer-marks">
+                            <span class="mark mark-30">30°</span>
+                            <span class="mark mark-60">60°</span>
+                            <span class="mark mark-90">90°</span>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
             <!-- Network Panel -->
             <div class="card">
@@ -127,6 +155,9 @@
                 </div>
                 <div class="card-body">
                     <div class="metric-item" id="uptime">Uptime: 0h 0m</div>
+                    <div class="metric-item" id="ip">IP: 0.0.0.0</div>
+                    <div class="metric-item" id="hostname">Hostname: Loading...</div>
+                    <div class="metric-item" id="mac_address">MAC: Loading...</div>
                 </div>
             </div>
 
@@ -145,12 +176,11 @@
     <footer>© Sani's Raspberry Resource Monitor</footer>
 
     <script>
-        // Initialize chart with proper config
         let tempChart;
         
+        // Initialize temperature chart
         function initChart() {
             const ctx = document.getElementById('tempChart').getContext('2d');
-            
             tempChart = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -176,43 +206,35 @@
                     },
                     scales: {
                         y: {
-                            beginAtZero: false,
                             suggestedMin: 30,
                             suggestedMax: 80,
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
                             ticks: {
                                 color: 'rgba(255, 255, 255, 0.7)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
                             }
                         },
                         x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
                         }
                     },
                     plugins: {
                         legend: {
-                            display: true,
-                            labels: {
-                                color: 'rgba(255, 255, 255, 0.7)'
-                            }
+                            labels: { color: 'rgba(255, 255, 255, 0.7)' }
                         }
                     }
                 }
             });
         }
 
-        // Update UI components with data
+        // Update UI components with real-time data
         function updateUI(data) {
-            // Update alerts
             let alertMessage = '';
             let alertClass = 'alert-success';
             
+            // Alert based on system stats
             if (data.cpu_total > 80) {
                 alertMessage += `⚠️ High CPU Usage: ${data.cpu_total}%<br>`;
                 alertClass = 'alert-warning';
@@ -230,162 +252,172 @@
                 alertClass = 'alert-danger';
             }
             
+            // Update alert message
             const alertEl = document.getElementById('alertMessage');
             alertEl.innerHTML = alertMessage || '✅ All systems normal';
             alertEl.className = 'alert ' + alertClass;
 
-            // Update CPU
+            // Update CPU usage
             document.getElementById('cpu').textContent = `${data.cpu_total}%`;
             document.getElementById('cpu-bar').style.width = `${data.cpu_total}%`;
-            document.getElementById('cpu-bar').className = `progress-bar ${getBarClass(data.cpu_total)}`;
             document.getElementById('cpuCores').textContent = `Cores: ${data.cpu_per_core.join('% | ')}%`;
 
-            // Update Memory
+            // Update RAM usage
             document.getElementById('memoryPercent').textContent = `${data.memory.percent}%`;
             document.getElementById('memory-bar').style.width = `${data.memory.percent}%`;
-            document.getElementById('memory-bar').className = `progress-bar ${getBarClass(data.memory.percent)}`;
             document.getElementById('memoryTotal').textContent = `Total: ${data.memory.total} MB`;
             document.getElementById('memoryUsed').textContent = `Used: ${data.memory.used} MB`;
             document.getElementById('memoryFree').textContent = `Free: ${data.memory.free} MB`;
 
-            // Update Disk
+            // Update Swap usage
+            document.getElementById('swapPercent').textContent = `${data.memory.swap_percent}%`;
+            document.getElementById('swap-bar').style.width = `${data.memory.swap_percent}%`;
+            document.getElementById('swapTotal').textContent = `Total: ${data.memory.swap_total} MB`;
+            document.getElementById('swapUsed').textContent = `Used: ${data.memory.swap_used} MB`;
+            document.getElementById('swapFree').textContent = `Free: ${data.memory.swap_free} MB`;
+
+            // Set colors based on usage
+            const memoryBar = document.getElementById('memory-bar');
+            const swapBar = document.getElementById('swap-bar');
+            memoryBar.className = data.memory.percent > 80 ? 'progress-bar progress-warning' : 'progress-bar progress-normal';
+            swapBar.className = data.memory.swap_percent > 50 ? 'progress-bar progress-critical' : 'progress-bar progress-normal';
+
+            // Update disk stats
             document.getElementById('disk').textContent = `${data.disk}%`;
             document.getElementById('disk-bar').style.width = `${data.disk}%`;
-            document.getElementById('disk-bar').className = `progress-bar ${getBarClass(data.disk)}`;
             document.getElementById('diskRead').textContent = `Read: ${data.disk_io.read_mb} MB`;
             document.getElementById('diskWrite').textContent = `Write: ${data.disk_io.write_mb} MB`;
 
-            // Update Temperature
+            // Update temperature
             document.getElementById('temp').textContent = `${data.temperature}°C`;
-            const tempFill = Math.min(100, Math.max(0, (data.temperature - 30) * 2));
-            document.getElementById('temp-fill').style.height = `${tempFill}%`;
-            document.getElementById('temp-fill').className = `thermometer-fill ${getTempClass(data.temperature)}`;
+            const minTemp = 30;
+            const maxTemp = 90;
+            const tempPercentage = Math.min(100, Math.max(0, ((data.temperature - minTemp) / (maxTemp - minTemp)) * 100));
+            document.getElementById('temp-fill').style.height = `${tempPercentage}%`;
+            
+            const tempFill = document.getElementById('temp-fill');
+            if (data.temperature > 70) {
+                tempFill.className = 'thermometer-fill temp-critical';
+            } else if (data.temperature > 60) {
+                tempFill.className = 'thermometer-fill temp-warning';
+            } else {
+                tempFill.className = 'thermometer-fill temp-normal';
+            }
 
-            // Update Network
+            // Update network stats
             document.getElementById('networkSent').textContent = `${data.network.bytes_sent_mb} MB`;
             document.getElementById('networkRecv').textContent = `${data.network.bytes_recv_mb} MB`;
 
-            // Update Uptime (directly calculate in frontend if server doesn't provide it)
+            // Update system info
             let uptimeText = 'Uptime: Calculating...';
-            try {
-                if (data.uptime !== undefined) {
-                    const uptimeHours = Math.floor(data.uptime / 3600);
-                    const uptimeMinutes = Math.floor((data.uptime % 3600) / 60);
-                    uptimeText = `Uptime: ${uptimeHours}h ${uptimeMinutes}m`;
-                }
-            } catch (e) {
-                console.error('Error processing uptime:', e);
+            if (data.uptime) {
+                const uptimeHours = Math.floor(data.uptime / 3600);
+                const uptimeMinutes = Math.floor((data.uptime % 3600) / 60);
+                uptimeText = `Uptime: ${uptimeHours}h ${uptimeMinutes}m`;
             }
             document.getElementById('uptime').textContent = uptimeText;
+            document.getElementById('hostname').textContent = `Hostname: ${data.hostname}`;
+            document.getElementById('mac_address').textContent = `MAC: ${data.mac_address}`;
+            document.getElementById('ip').textContent = `IP: ${data.ip_address}`;
 
-            // Update Top Processes (handle missing data safely)
+            // Update processes
+            let processList = '';
             try {
-                let processList = '';
-                if (data.top_processes && Array.isArray(data.top_processes) && data.top_processes.length > 0) {
-                    data.top_processes.forEach(proc => {
-                        // Handle potential missing properties safely
-                        const name = proc.name || 'Unknown';
-                        const pid = proc.pid || 'N/A';
-                        const cpuPercent = proc.cpu_percent !== undefined ? proc.cpu_percent : 'N/A';
-                        const memPercent = proc.memory_percent !== undefined ? 
-                            proc.memory_percent.toFixed(1) : 'N/A';
+                const processes = data.data?.top_processes || [];
+                
+                if (processes.length > 0) {
+                    processList = `
+<div class="process-header" style="
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: #252525;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 255, 242, 0.2);
+    margin-bottom: 8px;
+">
+    <span style="flex: 2; color: #f39c12;">Process</span>
+    <span style="flex: 1; text-align: center; color: #00fff2;">CPU</span>
+    <span style="flex: 1; text-align: right; color: #e74c3c;">PID</span>
+</div>`;
+                    
+                    processes.forEach(process => {
+                        const name = process.name || 'Unknown';
+                        const cpu = typeof process.cpu_percent === 'number' ? process.cpu_percent.toFixed(1) : '0';
+                        const pid = process.pid || '?';
                         
                         processList += `
-                        <div class="process-item">
-                            <div class="process-name">${name}</div>
-                            <div class="process-details">
-                                <span class="process-pid">PID: ${pid}</span>
-                                <span class="process-cpu">CPU: ${cpuPercent}%</span>
-                                <span class="process-mem">MEM: ${memPercent}%</span>
-                            </div>
-                        </div>`;
+<div class="process-item" style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border-left: 3px solid rgba(0, 255, 242, 0.3);
+    transition: all 0.2s ease;
+    cursor: pointer;
+" 
+onmouseover="this.style.backgroundColor='rgba(0, 255, 242, 0.05)'; this.style.boxShadow='0 2px 8px rgba(0, 255, 242, 0.1)'" 
+onmouseout="this.style.backgroundColor='rgba(255, 255, 255, 0.02)'; this.style.boxShadow='none'">
+    <span style="flex: 2; color: #f0f0f0; font-weight: 500; overflow: hidden; text-overflow: ellipsis;">${name}</span>
+    <span style="flex: 1; text-align: center; color: #00fff2; font-family: monospace;">${cpu}%</span>
+    <span style="flex: 1; text-align: right; color: #aaaaaa; font-family: monospace;">${pid}</span>
+</div>`;
                     });
                 } else {
-                    // Add code to extract top processes from backend response
-                    processList = '<div class="process-item">No process data available</div>';
+                    processList = '<div class="no-processes">No active processes</div>';
                 }
-                document.getElementById('processes').innerHTML = processList;
-            } catch (e) {
-                console.error('Error processing processes:', e);
-                document.getElementById('processes').innerHTML = 
-                    '<div class="process-item">Error loading process data</div>';
+            } catch (error) {
+                processList = '<div class="no-processes">Error loading processes</div>';
+                console.error('Error rendering processes:', error);
             }
+            document.getElementById('processes').innerHTML = processList;
 
             // Update temperature chart
-            const timeNow = new Date().toLocaleTimeString();
-            
-            if (tempChart) {
-                tempChart.data.labels.push(timeNow);
-                tempChart.data.datasets[0].data.push(data.temperature);
-                
-                if (tempChart.data.labels.length > 10) {
-                    tempChart.data.labels.shift();
-                    tempChart.data.datasets[0].data.shift();
-                }
-                
-                tempChart.update();
-            }
+            const labels = tempChart.data.labels;
+            const temps = tempChart.data.datasets[0].data;
+            temps.push(data.temperature);
+            if (temps.length > 10) temps.shift();
+            labels.push('');
+            if (labels.length > 10) labels.shift();
+            tempChart.update();
+
+            // Update RAM usage with dynamic color
+const memoryPercent = data.memory.percent;
+memoryBar.style.width = `${memoryPercent}%`;
+memoryBar.className = memoryPercent > 80 ? 'progress-bar progress-warning' : 
+                      memoryPercent > 60 ? 'progress-bar progress-normal' : 'progress-bar progress-normal';
+
+// Update Swap usage with dynamic color
+const swapPercent = data.memory.swap_percent;
+swapBar.style.width = `${swapPercent}%`;
+swapBar.className = swapPercent > 50 ? 'progress-bar progress-critical' : 
+                   swapPercent > 30 ? 'progress-bar progress-warning' : 'progress-bar progress-normal';
+
+// Update Disk usage with dynamic color
+const diskBar = document.getElementById('disk-bar');
+const diskPercent = data.disk;
+diskBar.style.width = `${diskPercent}%`;
+diskBar.className = diskPercent > 90 ? 'progress-bar progress-critical' : 
+                   diskPercent > 80 ? 'progress-bar progress-warning' : 'progress-bar progress-normal';
         }
 
-        // Helper functions for UI classes
-        function getBarClass(value) {
-            if (value > 90) return 'progress-critical';
-            if (value > 70) return 'progress-warning';
-            return 'progress-normal';
-        }
-
-        function getTempClass(value) {
-            if (value > 70) return 'temp-critical';
-            if (value > 60) return 'temp-warning';
-            return 'temp-normal';
-        }
-
-        // Fetch and update stats
-        function fetchStats() {
-            fetch('api/usage')
+        // Fetch system data
+        function fetchData() {
+            fetch('/api/usage')
                 .then(response => response.json())
-                .then(data => {
-                    // Let's modify the backend API data to include uptime and top processes
-                    // since your backend API doesn't provide it
-                    
-                    // Get uptime function for backend
-                    if (!data.uptime) {
-                        // Try to get uptime from cookie or use a starting point
-                        let startTime = parseInt(localStorage.getItem('monitorStartTime'));
-                        if (!startTime) {
-                            startTime = Date.now();
-                            localStorage.setItem('monitorStartTime', startTime);
-                        }
-                        const uptime = Math.floor((Date.now() - startTime) / 1000);
-                        data.uptime = uptime;
-                    }
-                    
-                    // Generate mock top processes if not available
-                    if (!data.top_processes || !Array.isArray(data.top_processes)) {
-                        data.top_processes = [
-                            { name: 'python3', pid: 1234, cpu_percent: parseFloat((data.cpu_total * 0.4).toFixed(1)), memory_percent: parseFloat((data.memory.percent * 0.3).toFixed(1)) },
-                            { name: 'node', pid: 2345, cpu_percent: parseFloat((data.cpu_total * 0.3).toFixed(1)), memory_percent: parseFloat((data.memory.percent * 0.2).toFixed(1)) },
-                            { name: 'nginx', pid: 3456, cpu_percent: parseFloat((data.cpu_total * 0.2).toFixed(1)), memory_percent: parseFloat((data.memory.percent * 0.15).toFixed(1)) },
-                            { name: 'bash', pid: 4567, cpu_percent: parseFloat((data.cpu_total * 0.1).toFixed(1)), memory_percent: parseFloat((data.memory.percent * 0.05).toFixed(1)) }
-                        ];
-                    }
-                    
-                    updateUI(data);
-                })
-                .catch(err => {
-                    console.error('Error fetching stats:', err);
-                    document.getElementById('alertMessage').innerHTML = '❌ Connection error. Retrying...';
-                    document.getElementById('alertMessage').className = 'alert alert-danger';
-                });
+                .then(data => updateUI(data))
+                .catch(err => console.error('Error fetching system data:', err));
         }
 
-        // Initialize on page load
-        window.onload = function() {
+        // Initialize
+        window.onload = () => {
             initChart();
-            fetchStats(); // First fetch
-            setInterval(fetchStats, 5000); // Update every 5 seconds
+            fetchData();
+            setInterval(fetchData, 5000); // Update every 5 seconds
         };
     </script>
 </body>
-
 </html>
