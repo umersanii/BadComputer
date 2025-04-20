@@ -4,15 +4,20 @@ import time
 import psutil
 import os
 import json
-from flask import Flask, jsonify, render_template
-from flask_cors import CORS
+from flask import Flask, jsonify, render_template, make_response
 import socket
 from pyngrok import ngrok
+from passw import TOKEN  
 
-NGROK_URL_FILE = "/home/umersani/Sani_Pi/ngrok_url.json"  # File to store API URL
+NGROK_URL_FILE = "/home/umersani/BadComputer/ngrok_url.json"  # File to store API URL
 
 app = Flask(__name__)
-CORS(app)
+
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    return response
 
 def get_swap_memory():
     """Returns swap memory usage information for Raspberry Pi"""
@@ -61,6 +66,7 @@ def save_ngrok_url(url):
     try:
         with open(NGROK_URL_FILE, "w") as f:
             json.dump({"ngrok_url": url}, f)
+            print(url)
     except Exception as e:
         print(f"❌ Error saving ngrok URL to file: {e}")
 
@@ -83,7 +89,8 @@ def get_ngrok_url():
 def start_ngrok():
     """Starts ngrok and returns the public URL."""
     try:
-        tunnel = ngrok.connect(5004)  # Port on which Flask is running
+        ngrok.set_auth_token(TOKEN)  # Replace with your actual token
+        tunnel = ngrok.connect(5004, bind_tls=True)  # Port on which Flask is running
         return tunnel.public_url
     except Exception as e:
         print(f"❌ Error starting ngrok: {e}")
@@ -170,13 +177,21 @@ def get_temperature():
 def usage():
     """API endpoint to return system usage data."""
     try:
-        return jsonify(get_system_usage())
+        response =  jsonify(get_system_usage())
+        response.headers['ngrok-skip-browser-warning'] = 'true'
+        print (response.headers)
+        return response
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve system usage: {str(e)}"}), 500
     
 @app.route('/favicon.ico')
 def favicon():
     return "", 404  # Silently ignore
+
+@app.after_request
+def add_skip_header(response):
+    response.headers['ngrok-skip-browser-warning'] = 'true'
+    return response
 
 @app.route('/')
 def home():
@@ -185,7 +200,10 @@ def home():
         with open(NGROK_URL_FILE, 'r') as f:
             data = json.load(f)
         ngrok_url = data.get("ngrok_url", None)
-        return render_template('index.html', ngrok_url=ngrok_url)
+        response = make_response(render_template('index.html', ngrok_url=ngrok_url))
+        response.headers['ngrok-skip-browser-warning'] = '1'
+        print (response.headers)
+        return response
     except Exception as e:
         return jsonify({"error": f"Error loading ngrok URL: {str(e)}"}), 500
 

@@ -404,13 +404,21 @@ diskBar.className = diskPercent > 90 ? 'progress-bar progress-critical' :
                    diskPercent > 80 ? 'progress-bar progress-warning' : 'progress-bar progress-normal';
         }
 
-        // Fetch system data
-        function fetchData() {
-            fetch('/api/usage')
-                .then(response => response.json())
-                .then(data => updateUI(data))
-                .catch(err => console.error('Error fetching system data:', err));
-        }
+    // Fetch system data
+    function fetchData() {
+    fetch('/api/usage', {
+        method: 'GET',
+        headers: new Headers({
+            "ngrok-skip-browser-warning": "69420",
+            "User-Agent": "CustomAgent/1.0"
+        })
+    })
+    .then(response => response.json())
+    .then(data => updateUI(data))
+    .catch(err => console.error('Error fetching system data:', err));
+}
+
+
 
         // Initialize
         window.onload = () => {
